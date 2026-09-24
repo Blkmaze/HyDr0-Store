@@ -62,6 +62,16 @@ class MainActivity : Activity() {
         grid.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
             showAppDialog(appAdapter.getItem(position))
         }
+        // Hold OK on an installed app to delete it straight away.
+        grid.onItemLongClickListener = AdapterView.OnItemLongClickListener { _, _, position, _ ->
+            val app = appAdapter.getItem(position)
+            if (Packages.state(this, app) != Packages.NOT_INSTALLED) {
+                uninstall(app.packageName)
+                true
+            } else {
+                false
+            }
+        }
 
         categoryAdapter = ArrayAdapter(this, R.layout.item_category, categoryNames)
         categoryList.adapter = categoryAdapter
@@ -195,6 +205,7 @@ class MainActivity : Activity() {
             selectedCategory = allCategory
         }
         applyFilter()
+        categoryList.setItemChecked(categoryNames.indexOf(selectedCategory), true)
 
         statusText.text = "${newCatalog.apps.size} apps  •  catalog: $from  •  store v${BuildConfig.VERSION_NAME}"
 
@@ -214,6 +225,7 @@ class MainActivity : Activity() {
             return
         }
         val name = categoryNames[position]
+        categoryList.setItemChecked(position, true)   // keeps the tinted highlight on it
         if (name != selectedCategory) {
             selectedCategory = name
             applyFilter()
@@ -274,10 +286,10 @@ class MainActivity : Activity() {
         } else if (status == Packages.UPDATE_AVAILABLE) {
             builder.setPositiveButton("Update") { _, _ -> getApp(app) }
             builder.setNeutralButton("Open") { _, _ -> launchApp(app.packageName) }
-            builder.setNegativeButton("Uninstall") { _, _ -> uninstall(app.packageName) }
+            builder.setNegativeButton("Delete") { _, _ -> uninstall(app.packageName) }
         } else {
             builder.setPositiveButton("Open") { _, _ -> launchApp(app.packageName) }
-            builder.setNeutralButton("Uninstall") { _, _ -> uninstall(app.packageName) }
+            builder.setNeutralButton("Delete") { _, _ -> uninstall(app.packageName) }
             builder.setNegativeButton("Close", null)
         }
         builder.show()
