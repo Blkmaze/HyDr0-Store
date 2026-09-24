@@ -1,5 +1,5 @@
 {
-  "catalog_version": 1,
+  "catalog_version": 2,
   "store_update": {
     "version_code": 3,
     "apk": "https://github.com/Blkmaze/HyDr0-Store/releases/download/Store-latest/HyDr0-Store.apk",
@@ -20,7 +20,7 @@
       "package": "org.xbmc.kodi",
       "version": "21.3 Omega",
       "code": "101",
-      "description": "Open-source media center from the XBMC Foundation. Official 32-bit ARM build, which runs on every Fire TV.",
+      "description": "Open-source media center from the XBMC Foundation. 21.3 Omega is the current stable release (22 Piers is still in beta). Official 32-bit ARM build, which runs on every Fire TV.",
       "source": {
         "type": "apk",
         "url": "https://mirrors.kodi.tv/releases/android/arm/kodi-21.3-Omega-armeabi-v7a.apk?https=1",
@@ -32,12 +32,12 @@
       "name": "VLC",
       "category": "Media Players",
       "package": "org.videolan.vlc",
-      "version": "3.7.0",
+      "version": "3.7.1",
       "code": "102",
       "description": "VideoLAN's open-source player. Plays almost any file, network share or stream.",
       "source": {
         "type": "apk",
-        "url": "https://download.videolan.org/pub/videolan/vlc-android/3.7.0/VLC-Android-3.7.0-armeabi-v7a.apk",
+        "url": "https://download.videolan.org/pub/videolan/vlc-android/3.7.1/VLC-Android-3.7.1-armeabi-v7a.apk",
         "sha256": ""
       }
     },
@@ -74,6 +74,17 @@
       "package": "com.stremio.one",
       "code": "105",
       "description": "Media hub for your own library and official add-ons.",
+      "source": {
+        "type": "store"
+      }
+    },
+    {
+      "id": "plex",
+      "name": "Plex",
+      "category": "Media Players",
+      "package": "com.plexapp.android",
+      "code": "106",
+      "description": "Client for a Plex Media Server, plus free live and on-demand channels.",
       "source": {
         "type": "store"
       }
@@ -151,6 +162,63 @@
       "package": "com.cbs.ott",
       "code": "304",
       "description": "Paramount's streaming service.",
+      "source": {
+        "type": "store"
+      }
+    },
+    {
+      "id": "smarttube",
+      "name": "SmartTube",
+      "category": "Streaming",
+      "package": "com.teamsmart.videomanager.tv",
+      "code": "305",
+      "description": "Open-source YouTube client for TV boxes with ad and sponsor skipping. Always pulls the newest stable GitHub release.",
+      "source": {
+        "type": "github",
+        "repo": "yuliskov/SmartTube",
+        "asset": "^SmartTube_stable_[0-9.]+_armeabi-v7a\\.apk$"
+      }
+    },
+    {
+      "id": "netflix",
+      "name": "Netflix",
+      "category": "Streaming",
+      "package": "com.netflix.ninja",
+      "code": "306",
+      "description": "Official Netflix app for TV. Needs a Netflix subscription.",
+      "source": {
+        "type": "store"
+      }
+    },
+    {
+      "id": "disneyplus",
+      "name": "Disney+",
+      "category": "Streaming",
+      "package": "com.disney.disneyplus",
+      "code": "307",
+      "description": "Official Disney+ app. Needs a Disney+ subscription.",
+      "source": {
+        "type": "store"
+      }
+    },
+    {
+      "id": "crunchyroll",
+      "name": "Crunchyroll",
+      "category": "Streaming",
+      "package": "com.crunchyroll.crunchyroid",
+      "code": "308",
+      "description": "Official anime streaming app. Free tier with ads, or Premium.",
+      "source": {
+        "type": "store"
+      }
+    },
+    {
+      "id": "sling",
+      "name": "Sling TV",
+      "category": "Streaming",
+      "package": "com.sling",
+      "code": "309",
+      "description": "Live TV service. Needs a Sling subscription.",
       "source": {
         "type": "store"
       }
