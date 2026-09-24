@@ -1,9 +1,9 @@
 {
   "catalog_version": 1,
   "store_update": {
-    "version_code": 0,
+    "version_code": 3,
     "apk": "https://github.com/Blkmaze/HyDr0-Store/releases/download/Store-latest/HyDr0-Store.apk",
-    "sha256": ""
+    "sha256": "d4760b8462ae2e4e2f37e92f8c125242b16e27116a00aaa06eaca58525b46875"
   },
   "categories": [
     "Media Players",
@@ -74,7 +74,9 @@
       "package": "com.stremio.one",
       "code": "105",
       "description": "Media hub for your own library and official add-ons.",
-      "source": { "type": "store" }
+      "source": {
+        "type": "store"
+      }
     },
     {
       "id": "tivimate",
@@ -83,7 +85,9 @@
       "package": "ar.tvplayer.tv",
       "code": "201",
       "description": "IPTV player for your own subscription or playlist. Official release; Premium is bought inside the app.",
-      "source": { "type": "store" }
+      "source": {
+        "type": "store"
+      }
     },
     {
       "id": "smarters",
@@ -92,7 +96,9 @@
       "package": "com.nst.iptvsmarterstvbox",
       "code": "202",
       "description": "IPTV player that supports Xtream Codes logins and M3U playlists. Official release.",
-      "source": { "type": "store" }
+      "source": {
+        "type": "store"
+      }
     },
     {
       "id": "ottnavigator",
@@ -101,7 +107,9 @@
       "package": "studio.scillarium.ottnavigator",
       "code": "203",
       "description": "IPTV player with a TV guide. Official release.",
-      "source": { "type": "store" }
+      "source": {
+        "type": "store"
+      }
     },
     {
       "id": "tubi",
@@ -110,7 +118,9 @@
       "package": "com.tubitv",
       "code": "301",
       "description": "Free movies and TV with ads.",
-      "source": { "type": "store" }
+      "source": {
+        "type": "store"
+      }
     },
     {
       "id": "pluto",
@@ -119,7 +129,9 @@
       "package": "tv.pluto.android",
       "code": "302",
       "description": "Free live channels and on-demand shows.",
-      "source": { "type": "store" }
+      "source": {
+        "type": "store"
+      }
     },
     {
       "id": "peacock",
@@ -128,7 +140,9 @@
       "package": "com.peacocktv.peacockandroid",
       "code": "303",
       "description": "NBCUniversal's streaming service.",
-      "source": { "type": "store" }
+      "source": {
+        "type": "store"
+      }
     },
     {
       "id": "paramount",
@@ -137,7 +151,9 @@
       "package": "com.cbs.ott",
       "code": "304",
       "description": "Paramount's streaming service.",
-      "source": { "type": "store" }
+      "source": {
+        "type": "store"
+      }
     },
     {
       "id": "downloader",
@@ -146,7 +162,9 @@
       "package": "com.esaba.downloader",
       "code": "401",
       "description": "AFTVnews' browser and file downloader for TV boxes.",
-      "source": { "type": "store" }
+      "source": {
+        "type": "store"
+      }
     },
     {
       "id": "xplore",
@@ -155,7 +173,9 @@
       "package": "com.lonelycatgames.Xplore",
       "code": "402",
       "description": "Dual-pane file manager with network shares (SMB, FTP), handy for a NAS.",
-      "source": { "type": "store" }
+      "source": {
+        "type": "store"
+      }
     },
     {
       "id": "remoteadb",
@@ -164,7 +184,9 @@
       "package": "com.cgutman.androidremotedebugger",
       "code": "403",
       "description": "ADB shell client for managing other Android devices on your network.",
-      "source": { "type": "store" }
+      "source": {
+        "type": "store"
+      }
     },
     {
       "id": "brave",
@@ -173,7 +195,9 @@
       "package": "com.brave.browser",
       "code": "404",
       "description": "Privacy-focused web browser.",
-      "source": { "type": "store" }
+      "source": {
+        "type": "store"
+      }
     },
     {
       "id": "tunnelbear",
@@ -182,7 +206,9 @@
       "package": "com.tunnelbear.android",
       "code": "501",
       "description": "Consumer VPN. Needs a TunnelBear account.",
-      "source": { "type": "store" }
+      "source": {
+        "type": "store"
+      }
     },
     {
       "id": "ipvanish",
@@ -191,7 +217,9 @@
       "package": "com.ixolit.ipvanish",
       "code": "502",
       "description": "Consumer VPN. Needs an IPVanish subscription.",
-      "source": { "type": "store" }
+      "source": {
+        "type": "store"
+      }
     }
   ]
 }
