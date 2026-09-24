@@ -52,6 +52,11 @@
             android:visibility="gone" />
 
         <Button
+            android:id="@+id/btnBrowser"
+            style="@style/TopButton"
+            android:text="Browser" />
+
+        <Button
             android:id="@+id/btnCode"
             style="@style/TopButton"
             android:text="Enter code" />
