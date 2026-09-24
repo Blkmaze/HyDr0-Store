@@ -4,8 +4,12 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
+import android.content.Context
 import android.os.Bundle
+import android.os.SystemClock
+import android.view.InputDevice
 import android.view.KeyEvent
+import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.webkit.URLUtil
@@ -35,11 +39,16 @@ class BrowserActivity : Activity() {
         const val EXTRA_APK_NAME = "apk_name"
         private const val HOME_PAGE = "https://www.google.com"
         private const val SEARCH_URL = "https://www.google.com/search?q="
+        private const val PREFS = "store_settings"
+        private const val PREF_POINTER = "browser_pointer"
     }
 
     private lateinit var web: WebView
     private lateinit var address: EditText
     private lateinit var progress: ProgressBar
+    private lateinit var cursor: CursorView
+    private lateinit var pointerButton: Button
+    private var pointerOn = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +57,8 @@ class BrowserActivity : Activity() {
         web = findViewById(R.id.web)
         address = findViewById(R.id.address)
         progress = findViewById(R.id.progress)
+        cursor = findViewById(R.id.cursor)
+        pointerButton = findViewById(R.id.btnPointer)
 
         setUpWebView()
 
@@ -60,6 +71,12 @@ class BrowserActivity : Activity() {
         findViewById<Button>(R.id.btnReload).setOnClickListener { web.reload() }
         findViewById<Button>(R.id.btnHome).setOnClickListener { web.loadUrl(HOME_PAGE) }
         findViewById<Button>(R.id.btnGo).setOnClickListener { go() }
+        pointerButton.setOnClickListener {
+            setPointer(!pointerOn)
+            web.requestFocus()
+        }
+        val prefs = getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+        setPointer(prefs.getBoolean(PREF_POINTER, false))
         findViewById<Button>(R.id.btnClose).setOnClickListener { finish() }
 
         address.setOnEditorActionListener { _, actionId, event ->
@@ -183,6 +200,89 @@ class BrowserActivity : Activity() {
         }
         web.loadUrl(url)
         web.requestFocus()
+    }
+
+    // ------------------------------------------------------------ pointer mode
+
+    private fun setPointer(on: Boolean) {
+        pointerOn = on
+        cursor.showing = on
+        pointerButton.text = if (on) "Pointer: On" else "Pointer: Off"
+        getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putBoolean(PREF_POINTER, on).apply()
+    }
+
+    // With the pointer on and the page focused, the arrows move the pointer,
+    // OK clicks where it points, and pushing past an edge scrolls the page.
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        if (!pointerOn || !web.hasFocus()) {
+            return super.dispatchKeyEvent(event)
+        }
+        val code = event.keyCode
+        val isArrow = code == KeyEvent.KEYCODE_DPAD_UP || code == KeyEvent.KEYCODE_DPAD_DOWN ||
+            code == KeyEvent.KEYCODE_DPAD_LEFT || code == KeyEvent.KEYCODE_DPAD_RIGHT
+        val isOk = code == KeyEvent.KEYCODE_DPAD_CENTER || code == KeyEvent.KEYCODE_ENTER ||
+            code == KeyEvent.KEYCODE_NUMPAD_ENTER
+        if (!isArrow && !isOk) {
+            return super.dispatchKeyEvent(event)
+        }
+        if (event.action != KeyEvent.ACTION_DOWN) {
+            return true    // swallow the key-up so the page doesn't also react
+        }
+
+        if (isOk) {
+            if (event.repeatCount == 0) {
+                clickAtCursor()
+            }
+            return true
+        }
+
+        // Starts slow for precise aiming, speeds up while the button is held.
+        val density = resources.displayMetrics.density
+        val step = (6 + minOf(event.repeatCount, 10) * 3) * density
+        var dx = 0f
+        var dy = 0f
+        when (code) {
+            KeyEvent.KEYCODE_DPAD_UP -> dy = -step
+            KeyEvent.KEYCODE_DPAD_DOWN -> dy = step
+            KeyEvent.KEYCODE_DPAD_LEFT -> dx = -step
+            KeyEvent.KEYCODE_DPAD_RIGHT -> dx = step
+        }
+
+        val x = cursor.cursorX + dx
+        val y = cursor.cursorY + dy
+        val maxX = cursor.width - 1f
+        val maxY = cursor.height - 1f
+
+        // Up at the very top of a page that can't scroll further: hop to the button bar.
+        if (dy < 0 && y < 0 && !web.canScrollVertically(-1)) {
+            pointerButton.requestFocus()
+            return true
+        }
+
+        // Past an edge: scroll the page instead of moving the pointer off screen.
+        val scrollAmount = (step * 3).toInt()
+        if (y < 0) web.scrollBy(0, -scrollAmount)
+        if (y > maxY) web.scrollBy(0, scrollAmount)
+        if (x < 0) web.scrollBy(-scrollAmount, 0)
+        if (x > maxX) web.scrollBy(scrollAmount, 0)
+
+        cursor.moveTo(x, y)
+        return true
+    }
+
+    // Pretends to be a finger tap at the pointer's spot.
+    private fun clickAtCursor() {
+        val x = cursor.cursorX
+        val y = cursor.cursorY
+        val downTime = SystemClock.uptimeMillis()
+        val down = MotionEvent.obtain(downTime, downTime, MotionEvent.ACTION_DOWN, x, y, 0)
+        down.source = InputDevice.SOURCE_TOUCHSCREEN
+        web.dispatchTouchEvent(down)
+        down.recycle()
+        val up = MotionEvent.obtain(downTime, downTime + 60, MotionEvent.ACTION_UP, x, y, 0)
+        up.source = InputDevice.SOURCE_TOUCHSCREEN
+        web.dispatchTouchEvent(up)
+        up.recycle()
     }
 
     // The remote's Back key walks back through pages before leaving the browser.
