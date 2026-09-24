@@ -1,9 +1,9 @@
 {
   "catalog_version": 2,
   "store_update": {
-    "version_code": 6,
+    "version_code": 8,
     "apk": "https://github.com/Blkmaze/HyDr0-Store/releases/download/Store-latest/HyDr0-Store.apk",
-    "sha256": "5791279aea189db3beb5939534c8ca6938954b91a3c842046d36d276c1f407be"
+    "sha256": "f22a9df5f7d06876f1773e6de48ac0c7279edee13ebe106251b0ec439d97932c"
   },
   "categories": [
     "Media Players",
