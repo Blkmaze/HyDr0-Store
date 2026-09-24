@@ -32,6 +32,13 @@
             </intent-filter>
         </activity>
 
+        <!-- Built-in web browser. -->
+        <activity
+            android:name=".BrowserActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard|navigation"
+            android:exported="false"
+            android:windowSoftInputMode="stateHidden|adjustPan" />
+
         <!-- Hands downloaded APK files to the system installer. -->
         <provider
             android:name=".ApkProvider"
