@@ -44,10 +44,10 @@ jobs:
 
       - name: Load signing key
         env:
-          KEYSTORE_B64: ${{ secrets.STORE_KEYSTORE_B64 }}
+          KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}
         run: |
           if [ -z "$KEYSTORE_B64" ]; then
-            echo "::error::Signing key missing. Add the STORE_KEYSTORE_B64, STORE_KEYSTORE_PASS, STORE_KEY_ALIAS and STORE_KEY_PASS secrets (see README step 2)."
+            echo "::error::Signing key missing. Add the KEYSTORE_B64, STORE_KEYSTORE_PASS and KEY_ALIAS secrets (see README step 2)."
             exit 1
           fi
           echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/store.jks"
@@ -56,8 +56,8 @@ jobs:
       - name: Build release APK
         env:
           STORE_KEYSTORE_PASS: ${{ secrets.STORE_KEYSTORE_PASS }}
-          STORE_KEY_ALIAS: ${{ secrets.STORE_KEY_ALIAS }}
-          STORE_KEY_PASS: ${{ secrets.STORE_KEY_PASS }}
+          STORE_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          STORE_KEY_PASS: ${{ secrets.STORE_KEYSTORE_PASS }}
           APP_NAME: ${{ github.event.inputs.app_name || 'HyDr0 Store' }}
           CATALOG_URL: ${{ github.event.inputs.catalog_url }}
         run: |
