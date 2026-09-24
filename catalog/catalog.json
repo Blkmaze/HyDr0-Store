@@ -1,0 +1,197 @@
+{
+  "catalog_version": 1,
+  "store_update": {
+    "version_code": 0,
+    "apk": "https://github.com/Blkmaze/HyDr0-Store/releases/download/Store-latest/HyDr0-Store.apk",
+    "sha256": ""
+  },
+  "categories": [
+    "Media Players",
+    "IPTV Players",
+    "Streaming",
+    "Utilities",
+    "VPN"
+  ],
+  "apps": [
+    {
+      "id": "kodi",
+      "name": "Kodi",
+      "category": "Media Players",
+      "package": "org.xbmc.kodi",
+      "version": "21.3 Omega",
+      "code": "101",
+      "description": "Open-source media center from the XBMC Foundation. Official 32-bit ARM build, which runs on every Fire TV.",
+      "source": {
+        "type": "apk",
+        "url": "https://mirrors.kodi.tv/releases/android/arm/kodi-21.3-Omega-armeabi-v7a.apk?https=1",
+        "sha256": ""
+      }
+    },
+    {
+      "id": "vlc",
+      "name": "VLC",
+      "category": "Media Players",
+      "package": "org.videolan.vlc",
+      "version": "3.7.0",
+      "code": "102",
+      "description": "VideoLAN's open-source player. Plays almost any file, network share or stream.",
+      "source": {
+        "type": "apk",
+        "url": "https://download.videolan.org/pub/videolan/vlc-android/3.7.0/VLC-Android-3.7.0-armeabi-v7a.apk",
+        "sha256": ""
+      }
+    },
+    {
+      "id": "justplayer",
+      "name": "Just Player",
+      "category": "Media Players",
+      "package": "com.brouken.player",
+      "code": "103",
+      "description": "Lightweight open-source video player built on ExoPlayer. Always pulls the newest GitHub release.",
+      "source": {
+        "type": "github",
+        "repo": "moneytoo/Player",
+        "asset": "^Just\\.Player\\.v[0-9.]+\\.apk$"
+      }
+    },
+    {
+      "id": "jellyfin",
+      "name": "Jellyfin",
+      "category": "Media Players",
+      "package": "org.jellyfin.androidtv",
+      "code": "104",
+      "description": "Official Android TV client for a Jellyfin media server. Always pulls the newest GitHub release.",
+      "source": {
+        "type": "github",
+        "repo": "jellyfin/jellyfin-androidtv",
+        "asset": "-release\\.apk$"
+      }
+    },
+    {
+      "id": "stremio",
+      "name": "Stremio",
+      "category": "Media Players",
+      "package": "com.stremio.one",
+      "code": "105",
+      "description": "Media hub for your own library and official add-ons.",
+      "source": { "type": "store" }
+    },
+    {
+      "id": "tivimate",
+      "name": "TiviMate",
+      "category": "IPTV Players",
+      "package": "ar.tvplayer.tv",
+      "code": "201",
+      "description": "IPTV player for your own subscription or playlist. Official release; Premium is bought inside the app.",
+      "source": { "type": "store" }
+    },
+    {
+      "id": "smarters",
+      "name": "IPTV Smarters Pro",
+      "category": "IPTV Players",
+      "package": "com.nst.iptvsmarterstvbox",
+      "code": "202",
+      "description": "IPTV player that supports Xtream Codes logins and M3U playlists. Official release.",
+      "source": { "type": "store" }
+    },
+    {
+      "id": "ottnavigator",
+      "name": "OTT Navigator",
+      "category": "IPTV Players",
+      "package": "studio.scillarium.ottnavigator",
+      "code": "203",
+      "description": "IPTV player with a TV guide. Official release.",
+      "source": { "type": "store" }
+    },
+    {
+      "id": "tubi",
+      "name": "Tubi",
+      "category": "Streaming",
+      "package": "com.tubitv",
+      "code": "301",
+      "description": "Free movies and TV with ads.",
+      "source": { "type": "store" }
+    },
+    {
+      "id": "pluto",
+      "name": "Pluto TV",
+      "category": "Streaming",
+      "package": "tv.pluto.android",
+      "code": "302",
+      "description": "Free live channels and on-demand shows.",
+      "source": { "type": "store" }
+    },
+    {
+      "id": "peacock",
+      "name": "Peacock",
+      "category": "Streaming",
+      "package": "com.peacocktv.peacockandroid",
+      "code": "303",
+      "description": "NBCUniversal's streaming service.",
+      "source": { "type": "store" }
+    },
+    {
+      "id": "paramount",
+      "name": "Paramount+",
+      "category": "Streaming",
+      "package": "com.cbs.ott",
+      "code": "304",
+      "description": "Paramount's streaming service.",
+      "source": { "type": "store" }
+    },
+    {
+      "id": "downloader",
+      "name": "Downloader",
+      "category": "Utilities",
+      "package": "com.esaba.downloader",
+      "code": "401",
+      "description": "AFTVnews' browser and file downloader for TV boxes.",
+      "source": { "type": "store" }
+    },
+    {
+      "id": "xplore",
+      "name": "X-plore File Manager",
+      "category": "Utilities",
+      "package": "com.lonelycatgames.Xplore",
+      "code": "402",
+      "description": "Dual-pane file manager with network shares (SMB, FTP), handy for a NAS.",
+      "source": { "type": "store" }
+    },
+    {
+      "id": "remoteadb",
+      "name": "Remote ADB Shell",
+      "category": "Utilities",
+      "package": "com.cgutman.androidremotedebugger",
+      "code": "403",
+      "description": "ADB shell client for managing other Android devices on your network.",
+      "source": { "type": "store" }
+    },
+    {
+      "id": "brave",
+      "name": "Brave Browser",
+      "category": "Utilities",
+      "package": "com.brave.browser",
+      "code": "404",
+      "description": "Privacy-focused web browser.",
+      "source": { "type": "store" }
+    },
+    {
+      "id": "tunnelbear",
+      "name": "TunnelBear VPN",
+      "category": "VPN",
+      "package": "com.tunnelbear.android",
+      "code": "501",
+      "description": "Consumer VPN. Needs a TunnelBear account.",
+      "source": { "type": "store" }
+    },
+    {
+      "id": "ipvanish",
+      "name": "IPVanish",
+      "category": "VPN",
+      "package": "com.ixolit.ipvanish",
+      "code": "502",
+      "description": "Consumer VPN. Needs an IPVanish subscription.",
+      "source": { "type": "store" }
+    }
+  ]
+}
