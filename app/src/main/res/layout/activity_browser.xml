@@ -56,6 +56,11 @@
             android:textSize="15sp" />
 
         <Button
+            android:id="@+id/btnPointer"
+            style="@style/TopButton"
+            android:text="Pointer: Off" />
+
+        <Button
             android:id="@+id/btnGo"
             style="@style/TopButton"
             android:text="Go" />
@@ -75,9 +80,20 @@
         android:progressTint="@color/accent"
         android:visibility="gone" />
 
-    <WebView
-        android:id="@+id/web"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1">
+
+        <WebView
+            android:id="@+id/web"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <!-- Mouse pointer for "Pointer: On" mode; drawn over the page. -->
+        <tv.hydr0.store.CursorView
+            android:id="@+id/cursor"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </FrameLayout>
 </LinearLayout>
