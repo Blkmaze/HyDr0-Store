@@ -85,12 +85,13 @@ object Net {
 
     // Downloads a file to disk and reports progress (0-100, or -1 when the size is unknown).
     // If expectedSha256 is not empty, the file is checked and deleted on mismatch.
+    // Returns the file's SHA-256 (lowercase hex).
     fun downloadFile(
         url: String,
         target: File,
         expectedSha256: String,
         onProgress: (Int) -> Unit
-    ) {
+    ): String {
         val hasHash = expectedSha256.isNotEmpty()
         val conn = open(url)
         val digest = MessageDigest.getInstance("SHA-256")
@@ -130,12 +131,62 @@ object Net {
             conn.disconnect()
         }
 
-        if (hasHash) {
-            val actual = toHex(digest.digest())
-            if (actual != expectedSha256) {
-                target.delete()
-                throw IOException("Checksum mismatch. The file was deleted for safety.")
+        val actual = toHex(digest.digest())
+        if (hasHash && actual != expectedSha256) {
+            target.delete()
+            throw IOException("Checksum mismatch. The file was deleted for safety.")
+        }
+        return actual
+    }
+
+    // What VirusTotal knows about a file. known = false when it has never seen it.
+    class ScanResult(
+        val known: Boolean,
+        val malicious: Int,
+        val suspicious: Int,
+        val engines: Int
+    )
+
+    // Looks a file up on VirusTotal by its SHA-256. Only the hash is sent,
+    // never the file itself.
+    fun virusTotalLookup(sha256: String, apiKey: String): ScanResult {
+        val conn = URL("https://www.virustotal.com/api/v3/files/$sha256").openConnection() as HttpURLConnection
+        conn.instanceFollowRedirects = false
+        conn.connectTimeout = 15000
+        conn.readTimeout = 20000
+        conn.setRequestProperty("User-Agent", USER_AGENT)
+        conn.setRequestProperty("x-apikey", apiKey)
+        try {
+            val code = conn.responseCode
+            if (code == 404) {
+                return ScanResult(false, 0, 0, 0)
             }
+            if (code == 401 || code == 403) {
+                throw IOException("VirusTotal rejected the API key. Check it in Settings.")
+            }
+            if (code == 429) {
+                throw IOException("VirusTotal limit reached (free keys allow 4 checks a minute). Try again shortly.")
+            }
+            if (code != 200) {
+                throw IOException("VirusTotal answered $code")
+            }
+            val text = String(conn.inputStream.readBytes(), Charsets.UTF_8)
+            val stats = JSONObject(text)
+                .getJSONObject("data")
+                .getJSONObject("attributes")
+                .getJSONObject("last_analysis_stats")
+            var engines = 0
+            val keys = stats.keys()
+            while (keys.hasNext()) {
+                val key = keys.next()
+                // "type-unsupported" and "failure" engines didn't really scan it
+                if (key != "type-unsupported" && key != "failure") {
+                    engines = engines + stats.optInt(key, 0)
+                }
+            }
+            return ScanResult(true, stats.optInt("malicious", 0), stats.optInt("suspicious", 0), engines)
+        } finally {
+            conn.disconnect()
         }
     }
 

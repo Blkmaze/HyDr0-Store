@@ -30,7 +30,9 @@ class MainActivity : Activity() {
 
     private val prefsName = "store_settings"
     private val prefCatalogUrl = "catalog_url"
+    private val prefVtKey = "virustotal_key"
     private val allCategory = "All apps"
+    private val browserRequest = 7
 
     private lateinit var grid: GridView
     private lateinit var categoryList: ListView
@@ -101,12 +103,27 @@ class MainActivity : Activity() {
             }
         })
 
+        findViewById<Button>(R.id.btnBrowser).setOnClickListener {
+            startActivityForResult(Intent(this, BrowserActivity::class.java), browserRequest)
+        }
         findViewById<Button>(R.id.btnCode).setOnClickListener { showCodeDialog() }
         findViewById<Button>(R.id.btnRefresh).setOnClickListener { loadCatalog() }
         findViewById<Button>(R.id.btnSettings).setOnClickListener { showSettingsDialog() }
         updateStoreButton.setOnClickListener { updateStore() }
 
         loadCatalog()
+    }
+
+    // The browser hands back an .apk link the user agreed to install.
+    @Deprecated("Plain Activity result callback")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode != browserRequest || resultCode != RESULT_OK || data == null) {
+            return
+        }
+        val url = data.getStringExtra(BrowserActivity.EXTRA_APK_URL) ?: return
+        val name = data.getStringExtra(BrowserActivity.EXTRA_APK_NAME) ?: "app"
+        downloadAndInstall(name, "web-" + safeFileName(name), url, "")
     }
 
     override fun onResume() {
@@ -358,30 +375,51 @@ class MainActivity : Activity() {
     }
 
     private fun showSettingsDialog() {
+        val prefs = getSharedPreferences(prefsName, Context.MODE_PRIVATE)
+
+        val catalogLabel = TextView(this)
+        catalogLabel.text = "Catalog link (must start with https://)"
         val input = EditText(this)
         input.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_URI
         input.setText(catalogUrl())
 
+        val vtLabel = TextView(this)
+        vtLabel.text = "\nVirusTotal API key (optional, free at virustotal.com). " +
+            "When set, every download is checked before it installs."
+        val vtInput = EditText(this)
+        vtInput.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+        vtInput.setText(virusTotalKey())
+        vtInput.hint = "Paste your key"
+
+        val box = LinearLayout(this)
+        box.orientation = LinearLayout.VERTICAL
+        box.addView(catalogLabel)
+        box.addView(input)
+        box.addView(vtLabel)
+        box.addView(vtInput)
+
         val builder = AlertDialog.Builder(this)
         builder.setTitle("Settings")
-        builder.setMessage("Catalog link (must start with https://)\n\nStore version ${BuildConfig.VERSION_NAME}")
-        builder.setView(wrap(input))
+        builder.setMessage("Store version ${BuildConfig.VERSION_NAME}")
+        builder.setView(wrap(box))
         builder.setPositiveButton("Save") { _, _ ->
+            prefs.edit().putString(prefVtKey, vtInput.text.toString().trim()).apply()
             val url = input.text.toString().trim()
             if (!url.startsWith("https://")) {
-                toast("The link must start with https://")
+                toast("The catalog link must start with https://")
             } else {
                 saveCatalogUrl(url)
                 loadCatalog()
             }
         }
-        builder.setNeutralButton("Reset to default") { _, _ ->
+        builder.setNeutralButton("Reset catalog link") { _, _ ->
             saveCatalogUrl("")
             loadCatalog()
         }
         builder.setNegativeButton("Cancel", null)
         builder.show()
     }
+
 
     private fun saveCatalogUrl(url: String) {
         val prefs = getSharedPreferences(prefsName, Context.MODE_PRIVATE)
@@ -476,9 +514,13 @@ class MainActivity : Activity() {
             .setNegativeButton("Cancel") { _, _ -> cancelled = true }
             .show()
 
+        // The store's own update is already pinned to its SHA-256 by our build, so it skips the scan.
+        val vtKey = if (fileBase == "store-update") "" else virusTotalKey()
+        val fromBrowser = fileBase.startsWith("web-")
+
         Thread {
             try {
-                Net.downloadFile(url, target, sha256) { percent ->
+                val fileHash = Net.downloadFile(url, target, sha256) { percent ->
                     if (cancelled) {
                         throw IOException("Cancelled")
                     }
@@ -495,12 +537,25 @@ class MainActivity : Activity() {
                         }
                     }
                 }
+                // Virus check by hash, before Android's install screen.
+                var scan: Net.ScanResult? = null
+                var scanError = ""
+                if (vtKey.isNotEmpty()) {
+                    runOnUiThread { label.text = "Checking with VirusTotal..." }
+                    try {
+                        scan = Net.virusTotalLookup(fileHash, vtKey)
+                    } catch (e: Exception) {
+                        scanError = e.message ?: "unknown error"
+                    }
+                }
+                val result = scan
+                val error = scanError
                 runOnUiThread {
                     if (screenGone()) {
                         return@runOnUiThread
                     }
                     dialog.dismiss()
-                    installApk(target)
+                    afterScan(title, target, vtKey.isNotEmpty(), fromBrowser, result, error)
                 }
             } catch (e: Exception) {
                 target.delete()
@@ -515,6 +570,74 @@ class MainActivity : Activity() {
                 }
             }
         }.start()
+    }
+
+    // Decides what happens after a download, based on the VirusTotal answer.
+    private fun afterScan(
+        title: String,
+        file: File,
+        scanned: Boolean,
+        fromBrowser: Boolean,
+        scan: Net.ScanResult?,
+        error: String
+    ) {
+        if (!scanned) {
+            // No key: catalog apps install as before; browser files get a warning first.
+            if (fromBrowser) {
+                confirmInstall(
+                    file,
+                    "Not virus-checked",
+                    "$title was not checked for viruses. Add a free VirusTotal API key in Settings to check every download."
+                )
+            } else {
+                installApk(file)
+            }
+            return
+        }
+        if (scan == null) {
+            confirmInstall(file, "Virus check failed", "Couldn't check $title:\n$error")
+            return
+        }
+        if (!scan.known) {
+            confirmInstall(
+                file,
+                "Unknown file",
+                "VirusTotal has never seen this exact file, so it can't vouch for it. Only install it if you trust where it came from."
+            )
+            return
+        }
+        val flagged = scan.malicious + scan.suspicious
+        if (flagged > 0) {
+            AlertDialog.Builder(this)
+                .setTitle("Blocked: flagged as unsafe")
+                .setMessage(
+                    "$title was flagged by $flagged of ${scan.engines} antivirus engines " +
+                        "(${scan.malicious} malicious, ${scan.suspicious} suspicious).\n\n" +
+                        "The file has been kept out of the installer."
+                )
+                .setPositiveButton("Delete file") { _, _ -> file.delete() }
+                .setNeutralButton("Install anyway") { _, _ -> installApk(file) }
+                .setOnCancelListener { file.delete() }
+                .show()
+            return
+        }
+        toast("VirusTotal: clean (0 of ${scan.engines} engines flagged it)")
+        installApk(file)
+    }
+
+    private fun confirmInstall(file: File, title: String, message: String) {
+        AlertDialog.Builder(this)
+            .setTitle(title)
+            .setMessage(message)
+            .setPositiveButton("Cancel") { _, _ -> file.delete() }
+            .setNeutralButton("Install anyway") { _, _ -> installApk(file) }
+            .setOnCancelListener { file.delete() }
+            .show()
+    }
+
+    private fun virusTotalKey(): String {
+        val prefs = getSharedPreferences(prefsName, Context.MODE_PRIVATE)
+        return (prefs.getString(prefVtKey, "") ?: "").trim()
     }
 
     private fun installApk(file: File) {
