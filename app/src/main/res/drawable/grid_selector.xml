@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Drawn on top of the highlighted app card in the grid. -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
-    <solid android:color="#00000000" />
+    <solid android:color="#0D00B4FF" />
     <stroke android:width="3dp" android:color="@color/accent" />
-    <corners android:radius="12dp" />
+    <corners android:radius="14dp" />
 </shape>
